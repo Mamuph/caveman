@@ -1,0 +1,42 @@
+<blue>
+    _____
+   / ___/__ __  _____ ______ _  ___ ____
+  / /__/ _ `/ |/ / -_) __/  ' \/ _ `/ _ \
+  \___/\_,_/|___/\__/_/ /_/_/_/\_,_/_//_/</blue> <red>#{{VERSION.MAJOR}}.#{{VERSION.MINOR}}</red>
+  The Mamuph Helper Tool
+
+
+  Usage:
+      #{{__EXECUTABLE__}} command [--] [options]
+
+  Arguments:
+      command               The command to execute [default: "help"]
+
+  Commands:
+
+      <green>new  </green> [base]          Initialize a new empty project
+
+      <green>build</green> [base]          Build a new release
+
+          Options:
+                -x                  Build PHAR as autoexecutable
+                -r or --remove-tmp  Remove temporal files
+                -z or --compress    Compress PHAR (Use --compress=bz2 for BZIP2 compression)
+                --inc-major         Increase major version
+                --inc-minor         Increase minor version
+                --private-key=key   Sign with private key (PEM format)
+
+
+      <green>inc-major</green> [base]      Increase major version
+
+      <green>dec-major</green> [base]      Decrease major version
+
+      <green>inc-minor</green> [base]      Increase minor version
+
+      <green>dec-minor</green> [base]      Decrease minor version
+
+      <green>inc-build</green> [base]      Increase build number
+
+      <green>dec-build</green> [base]      Decrease build number
+
+      <green>help</green>                  Display help
