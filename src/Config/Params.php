@@ -19,6 +19,18 @@ return
         'optional'      => true,
         'accept_value'  => 'path'
     ],
+    'release'       =>
+    [
+        'long_arg'      => 'release',
+        'description'   => 'Release version',
+        'optional'      => true
+    ],
+    'name'          =>
+    [
+        'long_arg'      => 'name',
+        'description'   => 'Project name',
+        'optional'      => true
+    ],
     'signature-type'     =>
     [
         'long_arg'      => 'signature-type',

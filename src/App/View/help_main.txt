@@ -16,6 +16,11 @@
 
       <green>new  </green> [base]          Initialize a new empty project
 
+          Options:
+                --release=release          Release (Default latest)
+                --name=project name        Project name
+
+
       <green>build</green> [base]          Build a new release
 
           Options:

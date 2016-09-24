@@ -1,5 +1,5 @@
 {
-  "id"        : "Caverman",
+  "name"        : "Caverman",
   "paths":
   {
     "build"     : "build/",
