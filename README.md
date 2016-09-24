@@ -44,4 +44,14 @@ Modify project version:
 -------
 
         caverman.phar --help
+        
+
+4. Build Caverman
+-----------------
+
+Caverman it able to build itself. Just type:
+
+        php src/index.php build 
+
+
 
