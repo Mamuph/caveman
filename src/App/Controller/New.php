@@ -40,13 +40,10 @@ class Controller_New extends Controller_Main
         if ($dest[0] != DS)
             $dest = getcwd() . DS . $dest;
 
-        $dest = realpath($dest);
 
         if (is_file($dest))
             $this->exit_error('Wrong path');
 
-        if (!is_writable($dest))
-            $this->exit_error("Unable to write in $dest");
 
         if (is_dir($dest))
         {
@@ -65,9 +62,15 @@ class Controller_New extends Controller_Main
         }
         else
         {
-            if (@mkdir($dest, 0774))
+            if (!@mkdir($dest, 0774))
                 $this->exit_error("Unable to create directory $dest");
         }
+
+
+        if (!is_writable($dest))
+            $this->exit_error("Unable to write in $dest");
+
+        $this->term->br()->out('<blue>Deploying new project into: </blue>' . $dest);
 
 
         // Retrieve release binary URL
