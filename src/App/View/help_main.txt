@@ -16,21 +16,7 @@
 
       <green>new  </green> [base]          Initialize a new empty project
 
-          Options:
-                --release=release          Release (Default latest)
-                --name=project name        Project name
-
-
       <green>build</green> [base]          Build a new release
-
-          Options:
-                -x                  Build PHAR as autoexecutable
-                -r or --remove-tmp  Remove temporal files
-                -z or --compress    Compress PHAR (Use --compress=bz2 for BZIP2 compression)
-                --inc-major         Increase major version
-                --inc-minor         Increase minor version
-                --private-key=key   Sign with private key (PEM format)
-
 
       <green>inc-major</green> [base]      Increase major version
 
