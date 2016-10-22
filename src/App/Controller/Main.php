@@ -13,10 +13,12 @@ class Controller_Main extends Controller
      */
     protected $term;
 
+
     /**
      * @var \League\CLImate\CLImate
      */
     protected $progress = null;
+
 
     /**
      * @var Config

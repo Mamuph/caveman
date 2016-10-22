@@ -100,6 +100,7 @@ class Controller_Build extends Controller_Main
         // Copy src files
         // --------------
         $this->term->br()->out("<blue>Copying base files...</blue>");
+
         if (!File::xcopy($GLOBALS['manifest']->_srcpath . '*', $tmpdir, 0755, File::EXCLUDE_HIDDEN))
             $this->exit_error("Unable to copy project files from {$GLOBALS['manifest']->_srcpath} to temporal directory: $tmpdir");
 
@@ -160,6 +161,7 @@ class Controller_Build extends Controller_Main
         // ----------
         $this->term->br()->out("<blue>Building PHAR...</blue>");
         $phar = new Model_PharBuilder($tmpdir);
+
 
         // Prepare signature
         // -----------------

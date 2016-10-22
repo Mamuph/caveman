@@ -19,6 +19,12 @@ return
         'optional'      => true,
         'accept_value'  => 'path'
     ],
+    'destination'   =>
+    [
+        'description'   => 'Project destination path',
+        'optional'      => true,
+        'accept_value'  => 'path'
+    ],
     'release'       =>
     [
         'long_arg'      => 'release',
