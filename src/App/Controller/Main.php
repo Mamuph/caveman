@@ -91,6 +91,7 @@ class Controller_Main extends Controller
     public function action_inc_major()
     {
         $number = $this->modify_version('major');
+        $this->modify_version('minor', 0);
         $this->term->br()->out(Juanparati\Emoji\Emoji::char('up arrow') . "  <blue>Increasing major version to</blue> $number");
 
         return Apprunner::EXIT_SUCCESS;
@@ -103,6 +104,7 @@ class Controller_Main extends Controller
     public function action_dec_major()
     {
         $number = $this->modify_version('major', -1);
+        $this->modify_version('minor', 0);
         $this->term->br()->out(Juanparati\Emoji\Emoji::char('down arrow') . "  <blue>Decreased major version to</blue> $number");
 
         return Apprunner::EXIT_SUCCESS;
@@ -167,7 +169,7 @@ class Controller_Main extends Controller
         }
 
         $external_version = $this->external_conf->load('version');
-        $external_version->{$key} = $external_version->{$key} + $inc;
+        $external_version->{$key} = $inc === 0 ? 0 : $external_version->{$key} + $inc;
         $external_version->set($key, $external_version->{$key});
 
         return $external_version->{$key};

@@ -55,6 +55,8 @@ class Controller_Build extends Controller_Main
                     if (!Phar::canCompress($compression_method))
                         $this->exit_error('BZ2 compression method not available. Install the BZIP2 extension');
 
+                    break;
+
                 case 'gz':
                 default:
 
@@ -228,6 +230,8 @@ class Controller_Build extends Controller_Main
         $this->term->br()->out(Juanparati\Emoji\Emoji::char('beer mug') . "  <green>Build performed, enjoy of your new PHAR at:</green> $pharfile");
 
 
+        // Remore temporal directory
+        // -------------------------
         if (Params::get('remove-tmp') && File::deltree(substr($tmpdir, 0, -1)))
             $this->term->br()->out("Removed temporal folder: <yellow>$tmpdir</yellow>");
 

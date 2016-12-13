@@ -136,7 +136,7 @@ class Model_PharBuilder
             $phar->compressFiles($this->options['compress']);
 
 
-        // Provide enviroment when executable
+        // Provide environment when executable
         if ($this->options['executable'] === true)
         {
             $default_stub = static::PHP_PHARCMD_BANG . $default_stub;
