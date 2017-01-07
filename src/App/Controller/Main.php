@@ -37,6 +37,7 @@ class Controller_Main extends Controller
 
     /**
      * Entry point
+     *
      */
     public function action_main()
     {
@@ -66,7 +67,7 @@ class Controller_Main extends Controller
 
         }
 
-        return Apprunner::terminate(Apprunner::EXIT_SUCCESS);
+        Apprunner::terminate(Apprunner::EXIT_SUCCESS);
 
     }
 
@@ -168,7 +169,7 @@ class Controller_Main extends Controller
             $this->open_target_conf();
         }
 
-        $external_version = $this->external_conf->load('version');
+        $external_version = $this->external_conf->load('Version');
         $external_version->{$key} = $inc === 0 ? 0 : $external_version->{$key} + $inc;
         $external_version->set($key, $external_version->{$key});
 

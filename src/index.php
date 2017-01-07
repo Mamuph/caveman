@@ -126,13 +126,7 @@ spl_autoload_register(array('Apprunner', 'auto_load'));
 /**
  * Initialize hooks
  */
-Hooks::instance();
-
-
-/**
- * Load default internal App configuration
- */
-Config::instance()->attach(new Config_FileReader(CONFIGPATH));
+Hook::instance();
 
 
 /**

@@ -23,6 +23,12 @@ set_time_limit(0);
 
 
 /**
+ * Load default internal App configuration
+ */
+Config::instance()->attach(new Config_FileReader(CONFIGPATH));
+
+
+/**
  * Set accepted command line parameters/arguments
  *
  * Parameters are taken from the Config/Params.php
@@ -119,7 +125,7 @@ Apprunner::requires(VENDORPATH . 'autoload.php');
 /**
  * Send initialized notification
  */
-Hooks::instance()->notify('MAMUPH_INITIALIZED');
+Hook::instance()->notify('MAMUPH_INITIALIZED');
 
 
 /**
