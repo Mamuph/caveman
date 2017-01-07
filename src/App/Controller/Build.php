@@ -96,7 +96,7 @@ class Controller_Build extends Controller_Main
 
         // Read version
         // ------------
-        $external_version = (array) $external_version = $this->external_conf->load('version');;
+        $external_version = (array) $external_version = $this->external_conf->load('Version');
 
 
         // Copy src files
