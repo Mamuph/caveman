@@ -42,7 +42,7 @@ class Model_SignatureManager
      *
      * @return bool
      */
-    public function is_protected()
+    public function isProtected() : bool
     {
         return stripos($this->pem_string, 'Proc-Type: 4,ENCRYPTED');
     }
@@ -54,11 +54,10 @@ class Model_SignatureManager
      * @param string $password
      * @return bool
      */
-    public function export($password = '')
+    public function export($password = '') : bool
     {
 
-
-        if ($this->is_protected())
+        if ($this->isProtected())
         {
             $encrypted_key = openssl_get_privatekey($this->pem_string, $password);
             return openssl_pkey_export($encrypted_key, $this->private_key);

@@ -9,21 +9,21 @@ class Controller_Build extends Controller_Main
     /**
      * Build controller entry point
      *
-     * @return int|void
+     * @return int
      */
-    public function action_main()
+    public function actionMain()
     {
 
         if (!Params::get('source'))
         {
-            $this->action_help('build');
+            $this->actionHelp('build');
             return Apprunner::EXIT_SUCCESS;
         }
 
-        $this->read_manifest();
-        $this->open_target_conf();
+        $this->readIgloo();
+        $this->openTargetConf();
 
-        return parent::action_main();
+        parent::actionMain();
     }
 
 
@@ -31,14 +31,13 @@ class Controller_Build extends Controller_Main
     /**
      * Perform the build command
      */
-    protected function action_build()
+    protected function actionBuild()
     {
-
 
         // Check dependencies
         // ------------------
         if (!Phar::canWrite())
-            $this->exit_error('phar.readonly was set to 1, please modify your php.ini');
+            $this->exitError('phar.readonly was set to 1, please modify your php.ini');
 
 
         $compression_method = false;
@@ -53,7 +52,7 @@ class Controller_Build extends Controller_Main
                     $compression_method = Phar::BZ2;
 
                     if (!Phar::canCompress($compression_method))
-                        $this->exit_error('BZ2 compression method not available. Install the BZIP2 extension');
+                        $this->exitError('BZ2 compression method not available. Install the BZIP2 extension');
 
                     break;
 
@@ -63,7 +62,7 @@ class Controller_Build extends Controller_Main
                     $compression_method = Phar::GZ;
 
                     if (!Phar::canCompress($compression_method))
-                        $this->exit_error('GZ compression method not available. Install the ZLIB extension');
+                        $this->exitError('GZ compression method not available. Install the ZLIB extension');
 
             }
         }
@@ -76,10 +75,10 @@ class Controller_Build extends Controller_Main
 
         // Compute buildpath
         // -----------------
-        if (empty($GLOBALS['manifest']->paths->build))
+        if (empty($GLOBALS['igloo']->paths->build))
             $buildpath =  getcwd() . DS;
         else
-            $buildpath = dirname($GLOBALS['manifest']->_manifest_path) . DS . $GLOBALS['manifest']->paths->build;
+            $buildpath = dirname($GLOBALS['igloo']->_manifest_path) . DS . $GLOBALS['igloo']->paths->build;
 
         $buildpath = realpath($buildpath) . DS;
 
@@ -91,7 +90,7 @@ class Controller_Build extends Controller_Main
         $tmpdir = $buildpath . 'temp_' . uniqid() . DS;
 
         if (!@mkdir($tmpdir))
-            $this->exit_error('Unable to create temp directory: ' . $tmpdir);
+            $this->exitError('Unable to create temp directory: ' . $tmpdir);
 
 
         // Read version
@@ -103,18 +102,18 @@ class Controller_Build extends Controller_Main
         // --------------
         $this->term->br()->out("<blue>Copying base files...</blue>");
 
-        if (!File::xcopy($GLOBALS['manifest']->_srcpath . '*', $tmpdir, 0755, File::EXCLUDE_HIDDEN))
-            $this->exit_error("Unable to copy project files from {$GLOBALS['manifest']->_srcpath} to temporal directory: $tmpdir");
+        if (!File::xcopy($GLOBALS['igloo']->_srcpath . '*', $tmpdir, 0755, File::EXCLUDE_HIDDEN))
+            $this->exitError("Unable to copy project files from {$GLOBALS['igloo']->_srcpath} to temporal directory: $tmpdir");
 
 
         // Set version to build file
         // -------------------------
-        $GLOBALS['manifest']->build->name = Replacer::replace_from_array($external_version, $GLOBALS['manifest']->build->name, 'VERSION');
+        $GLOBALS['igloo']->build->name = Replacer::replace_from_array($external_version, $GLOBALS['igloo']->build->name, 'VERSION');
 
 
         // Set phar file path
         // ------------------
-        $pharfile = $buildpath . $GLOBALS['manifest']->build->name;
+        $pharfile = $buildpath . $GLOBALS['igloo']->build->name;
 
 
         // Read and process project files
@@ -150,12 +149,12 @@ class Controller_Build extends Controller_Main
         // Modify versions
         // ---------------
         if (Params::get('inc-major'))
-            $this->action_inc_major();
+            $this->actionIncMajor();
 
         if (Params::get('inc-minor'))
-            $this->action_inc_minor();
+            $this->actionIncMinor();
 
-        $this->action_inc_build();
+        $this->actionIncBuild();
 
 
 
@@ -172,9 +171,9 @@ class Controller_Build extends Controller_Main
             $signature = new Model_SignatureManager(Params::get('private-key'));
             $key_password = '';
 
-            if ($signature->is_protected())
+            if ($signature->isProtected())
             {
-                $input_password = $this->term->br()->password(Juanparati\Emoji\Emoji::char('lock') . '  <yellow>Enter the private key password:</yellow>');
+                $input_password = $this->term->br()->password('🔐  <yellow>Enter the private key password:</yellow>');
                 $key_password = $input_password->prompt();
             }
 
@@ -225,9 +224,9 @@ class Controller_Build extends Controller_Main
         $phar->set('compress', $compression_method);
 
         if (($build_status = $phar->build($pharfile)) !== true)
-            $this->exit_error($build_status);
+            $this->exitError($build_status);
 
-        $this->term->br()->out(Juanparati\Emoji\Emoji::char('beer mug') . "  <green>Build performed, enjoy of your new PHAR at:</green> $pharfile");
+        $this->term->br()->out("🍺  <green>Build performed, enjoy of your new PHAR at:</green> $pharfile");
 
 
         // Remore temporal directory

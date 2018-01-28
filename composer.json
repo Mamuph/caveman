@@ -1,19 +1,18 @@
 {
-  "name": "mamuph/caverman",
+  "name": "mamuph/caveman",
   "description": "The Mamuph Helper Tool",
   "minimum-stability": "dev",
-  "license": "MIT",
+  "license": "BSD",
   "authors": [
     {
       "name": "Juan Lago",
-      "email": "juanparati@gmail.com"
+      "email": "mamuph@protonmail.com"
     }
   ],
   "config": {
     "vendor-dir": "src/Vendor"
   },
   "require": {
-    "league/climate": "^3.2",
-    "juanparati/emoji": "dev-master"
+    "league/climate": "^3.2"
   }
 }
