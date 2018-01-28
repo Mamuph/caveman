@@ -128,12 +128,10 @@ class Model_PharBuilder
         // Add files
         $phar->buildFromDirectory($this->source_dir);
 
-
         /*
         $default_stub = $phar->createDefaultStub('index.php');
         $default_stub = '<?php define("APPID", "' . APPID . '")?>' . $default_stub;
         */
-
 
         $default_stub = $this->getPharHeader();
 
