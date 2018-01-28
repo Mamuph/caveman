@@ -150,10 +150,10 @@ class Controller_New extends Controller_Main
 
         // Set project name
         // ----------------
-        $manifest_path = $dest . DS . 'manifest.json';
+        $manifest_path = $dest . DS . 'igloo.json';
 
         if (!File::exists($manifest_path, File::SCOPE_EXTERNAL))
-            $this->exitError('Unable to find manifest.json');
+            $this->exitError('Unable to find igloo.json');
 
         $manifest = json_decode(file_get_contents($manifest_path), true);
         $project_name = Params::get('name');
