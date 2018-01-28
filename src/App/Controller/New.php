@@ -8,20 +8,18 @@ class Controller_New extends Controller_Main
 
     /**
      * New controller entry-point
-     *
-     * @return int
      */
-    public function action_main()
+    public function actionMain()
     {
 
         if (!Params::get('source'))
         {
-            $this->action_help('new');
+            $this->actionHelp('new');
             return Apprunner::EXIT_SUCCESS;
         }
 
 
-        return parent::action_main();
+        return parent::actionMain();
     }
 
 
@@ -30,7 +28,7 @@ class Controller_New extends Controller_Main
      *
      * @return int
      */
-    protected function action_new()
+    protected function actionNew()
     {
 
         // Read destination directory
@@ -42,7 +40,7 @@ class Controller_New extends Controller_Main
 
 
         if (is_file($dest))
-            $this->exit_error('Wrong path');
+            $this->exitError('Wrong path');
 
 
         if (is_dir($dest))
@@ -56,19 +54,19 @@ class Controller_New extends Controller_Main
                 $input = $this->term->confirm('<yellow>Continue?</yellow>');
 
                 if (!$input->confirmed())
-                    $this->exit_error('Aborting...');
+                    $this->exitError('Aborting...');
             }
 
         }
         else
         {
             if (!@mkdir($dest, 0774))
-                $this->exit_error("Unable to create directory $dest");
+                $this->exitError("Unable to create directory $dest");
         }
 
 
         if (!is_writable($dest))
-            $this->exit_error("Unable to write in $dest");
+            $this->exitError("Unable to write in $dest");
 
         $this->term->br()->out('<blue>Deploying new project into: </blue>' . $dest);
 
@@ -82,7 +80,7 @@ class Controller_New extends Controller_Main
         $package_url = $package->getBinaryURL();
 
         if (!$package_url)
-            $this->exit_error('Release package is not available (Wrong version?)');
+            $this->exitError('Release package is not available (Wrong version?)');
 
 
         // Get release binary size
@@ -94,7 +92,7 @@ class Controller_New extends Controller_Main
         // Download file
         // -------------
         if (!$fpsrc = fopen($package_url, 'r'))
-            $this->exit_error('Unable to download ' . $package_url);
+            $this->exitError('Unable to download ' . $package_url);
 
         $this->term->br()->out('<blue>Downloading:</blue> ' . $package_url);
 
@@ -105,7 +103,7 @@ class Controller_New extends Controller_Main
             fwrite($fptmp, fread($fpsrc, 65536));
 
             if ($fsize)
-                $this->show_progressbar(array('total' => $fsize, 'current' => fstat($fptmp)['size']));
+                $this->showProgressbar(array('total' => $fsize, 'current' => fstat($fptmp)['size']));
         }
 
         fclose($fpsrc);
@@ -138,14 +136,14 @@ class Controller_New extends Controller_Main
 
                 @copy('zip://' . $zippath . '#' . $entry, $dest . $name);
 
-                $this->show_progressbar(['total' => $total_files, 'current' => $i + 1]);
+                $this->showProgressbar(['total' => $total_files, 'current' => $i + 1]);
             }
 
             $zip->close();
 
         }
         else
-            $this->exit_error('Unable to decompress source file');
+            $this->exitError('Unable to decompress source file');
 
         fclose($fptmp);
 
@@ -155,7 +153,7 @@ class Controller_New extends Controller_Main
         $manifest_path = $dest . DS . 'manifest.json';
 
         if (!File::exists($manifest_path, File::SCOPE_EXTERNAL))
-            $this->exit_error('Unable to find manifest.json');
+            $this->exitError('Unable to find manifest.json');
 
         $manifest = json_decode(file_get_contents($manifest_path), true);
         $project_name = Params::get('name');
@@ -181,7 +179,7 @@ class Controller_New extends Controller_Main
 
         // End action
         // ----------
-        $this->term->br()->out(\Juanparati\Emoji\Emoji::char('thumbs up') . "  <green>New project</green> $project_name <green>deployed</green>");
+        $this->term->br()->out("👍  <green>New project</green> $project_name <green>deployed</green>");
 
         return Apprunner::EXIT_SUCCESS;
 

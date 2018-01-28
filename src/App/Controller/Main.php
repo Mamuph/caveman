@@ -36,17 +36,16 @@ class Controller_Main extends Controller
 
 
     /**
-     * Entry point
-     *
+     * Entry point.
      */
-    public function action_main()
+    public function actionMain()
     {
 
         $controller = 'action_' . strtolower(Params::get('command'));
-        $controller = str_replace('-', '_', $controller);
+        $controller = Str::camel($controller);
 
-        if (!Params::get('command') || $controller == __FUNCTION__ || $controller == 'action_help')
-            $this->action_help();
+        if (!Params::get('command') || $controller == __FUNCTION__ || $controller == 'actionHelp')
+            $this->actionHelp();
         else
         {
             if (method_exists($this, $controller))
@@ -59,10 +58,10 @@ class Controller_Main extends Controller
             {
                 $controller = ucfirst(Params::get('command'));
 
-                if (Apprunner::find_file(APPPATH . 'Controller', $controller, 'php'))
+                if (Apprunner::findFile(APPPATH . 'Controller', $controller, 'php'))
                     Apprunner::execute($controller);
                 else
-                    $this->action_help();
+                    $this->actionHelp();
             }
 
         }
@@ -77,7 +76,7 @@ class Controller_Main extends Controller
      *
      * @param string $help_view
      */
-    protected function action_help($help_view = 'main')
+    protected function actionHelp($help_view = 'main')
     {
         $help = file_get_contents(APPPATH . 'View/help_' . $help_view . '.txt');
         $help = str_replace('#{{__EXECUTABLE__}}', basename(Phar::running()), $help);
@@ -89,11 +88,11 @@ class Controller_Main extends Controller
     /**
      * Increment major version
      */
-    public function action_inc_major()
+    public function actionIncMajor() : int
     {
-        $number = $this->modify_version('major');
-        $this->modify_version('minor', 0);
-        $this->term->br()->out(Juanparati\Emoji\Emoji::char('up arrow') . "  <blue>Increasing major version to</blue> $number");
+        $number = $this->modifyVersion('major');
+        $this->modifyVersion('minor', 0);
+        $this->term->br()->out("⬆  <blue>Increasing major version to</blue> $number");
 
         return Apprunner::EXIT_SUCCESS;
     }
@@ -102,11 +101,11 @@ class Controller_Main extends Controller
     /**
      * Decrement major version
      */
-    public function action_dec_major()
+    public function actionDecMajor() : int
     {
-        $number = $this->modify_version('major', -1);
-        $this->modify_version('minor', 0);
-        $this->term->br()->out(Juanparati\Emoji\Emoji::char('down arrow') . "  <blue>Decreased major version to</blue> $number");
+        $number = $this->modifyVersion('major', -1);
+        $this->modifyVersion('minor', 0);
+        $this->term->br()->out("⬇︎  <blue>Decreased major version to</blue> $number");
 
         return Apprunner::EXIT_SUCCESS;
     }
@@ -115,10 +114,10 @@ class Controller_Main extends Controller
     /**
      * Increment minor version
      */
-    public function action_inc_minor()
+    public function actionIncMinor() : int
     {
-        $number = $this->modify_version('minor');
-        $this->term->br()->out(Juanparati\Emoji\Emoji::char('up arrow') . "  <blue>Increased minor version to</blue> $number");
+        $number = $this->modifyVersion('minor');
+        $this->term->br()->out("⬆  <blue>Increased minor version to</blue> $number");
 
         return Apprunner::EXIT_SUCCESS;
     }
@@ -127,10 +126,10 @@ class Controller_Main extends Controller
     /**
      * Decrement minor version
      */
-    public function action_dec_minor()
+    public function actionDecMinor() : int
     {
-        $number = $this->modify_version('minor', -1);
-        $this->term->br()->out(Juanparati\Emoji\Emoji::char('down arrow') . "  <blue>Decreased minor version to</blue> $number");
+        $number = $this->modifyVersion('minor', -1);
+        $this->term->br()->out("⬇︎  <blue>Decreased minor version to</blue> $number");
 
         return Apprunner::EXIT_SUCCESS;
     }
@@ -139,34 +138,45 @@ class Controller_Main extends Controller
     /**
      * Increment build
      */
-    public function action_inc_build()
+    public function actionIncBuild() : int
     {
-        $number = $this->modify_version('build');
-        $this->term->br()->out(Juanparati\Emoji\Emoji::char('up arrow') . "  <blue>Increased build version to</blue> $number");
+        $number = $this->modifyVersion('build');
+        $this->term->br()->out("⬆︎  <blue>Increased build version to</blue> $number");
 
         return Apprunner::EXIT_SUCCESS;
     }
 
 
     /**
-     * Decrement build
+     * Decrement build.
+     *
+     * @return int
+     * @throws Exception
      */
-    public function action_dec_build()
+    public function actionDecBuild() : int
     {
-        $number = $this->modify_version('build', -1);
-        $this->term->br()->out(Juanparati\Emoji\Emoji::char('down arrow') . "  <blue>Decreased build version to</blue> $number");
+        $number = $this->modifyVersion('build', -1);
+        $this->term->br()->out("⬇︎  <blue>Decreased build version to</blue> $number");
 
         return Apprunner::EXIT_SUCCESS;
     }
 
 
-    protected function modify_version($key, $inc = 1)
+    /**
+     * Modify version.
+     *
+     * @param $key
+     * @param int $inc
+     * @return mixed
+     * @throws Exception
+     */
+    protected function modifyVersion($key, $inc = 1)
     {
 
-        if (empty($GLOBALS['manifest']))
+        if (empty($GLOBALS['igloo']))
         {
-            $this->read_manifest();
-            $this->open_target_conf();
+            $this->readIgloo();
+            $this->openTargetConf();
         }
 
         $external_version = $this->external_conf->load('Version');
@@ -178,41 +188,47 @@ class Controller_Main extends Controller
 
 
     /**
-     * Read the manifest file, compute the source directory,
+     * Read the igloo/manifest file, compute the source directory,
      * dump the configuration and return the manifest path
      *
      * @return string
      */
-    protected function read_manifest()
+    protected function readIgloo()
     {
 
-        $this->term->br()->out('<blue>Reading manifest...</blue>');
+        $this->term->br()->out('<blue>Reading igloo manifest...</blue>');
 
         if (!Params::get('source'))
             Params::set('source', '.');
 
-        $manifest_path = Params::get('source') . DS . 'manifest.json';
+        $manifest_path = Params::get('source') . DS . 'igloo.json';
 
         if (!File::exists($manifest_path, File::SCOPE_EXTERNAL))
-            $this->exit_error('Manifest file is not available!');
+        {
+            // Try to read old manifest file
+            $manifest_path = Params::get('source') . DS . 'manifest.json';
 
-        $GLOBALS['manifest'] = json_decode(file_get_contents($manifest_path));
+            if (!File::exists($manifest_path, File::SCOPE_EXTERNAL))
+                $this->exitError('igloo.json file is not available!');
+        }
 
-        if ($GLOBALS['manifest'] === null)
-            $this->exit_error('Unable to read the manifest file');
+        $GLOBALS['igloo'] = json_decode(file_get_contents($manifest_path));
 
-        if (empty($GLOBALS['manifest']->paths) || empty($GLOBALS['manifest']->paths->src))
-            $this->exit_error('manifest.js: Wrong format');
+        if ($GLOBALS['igloo'] === null)
+            $this->exitError('Unable to read the manifest file');
 
-        if (empty($GLOBALS['manifest']->build->name))
-            $this->exit_error('manifest.js: Wrong build name');
+        if (empty($GLOBALS['igloo']->paths) || empty($GLOBALS['igloo']->paths->src))
+            $this->exitError('igloo.json: Wrong format');
+
+        if (empty($GLOBALS['igloo']->build->name))
+            $this->exitError('igloo.json: Wrong build name');
 
         // Save manifest path in globals
-        $GLOBALS['manifest']->_manifest_path = $manifest_path;
+        $GLOBALS['igloo']->_manifest_path = $manifest_path;
 
         // Save the srcpath in globals
-        $srcpath = dirname($manifest_path) . DS . $GLOBALS['manifest']->paths->src;
-        $GLOBALS['manifest']->_srcpath = realpath($srcpath) . DS;
+        $srcpath = dirname($manifest_path) . DS . $GLOBALS['igloo']->paths->src;
+        $GLOBALS['igloo']->_srcpath = realpath($srcpath) . DS;
 
         return $manifest_path;
 
@@ -222,16 +238,16 @@ class Controller_Main extends Controller
     /**
      * Open the target configuration
      */
-    protected function open_target_conf()
+    protected function openTargetConf()
     {
 
         $this->term->br()->out("<blue>Opening target configuration...</blue>");
-        $external_conf_path  = $GLOBALS['manifest']->_srcpath . 'Config' . DS;
+        $external_conf_path  = $GLOBALS['igloo']->_srcpath . 'Config' . DS;
 
         $this->external_conf = new Config();
         $this->external_conf
-            ->attach(new Config_FileReader($external_conf_path))       // Reader
-            ->attach(new Config_FileWriter($external_conf_path));      // Writer
+            ->attach(new Config_File_Reader($external_conf_path))       // Reader
+            ->attach(new Config_File_Writer($external_conf_path));      // Writer
 
     }
 
@@ -242,7 +258,7 @@ class Controller_Main extends Controller
      *
      * @param $message
      */
-    protected function exit_error($message)
+    protected function exitError($message)
     {
         $this->term->error($message);
         Apprunner::terminate(Apprunner::EXIT_FAILURE);
@@ -254,7 +270,7 @@ class Controller_Main extends Controller
      *
      * @param $progress_info
      */
-    public function show_progressbar($progress_info)
+    public function showProgressbar($progress_info)
     {
 
         if ($this->progress === null)

@@ -59,12 +59,12 @@ class Model_PharBuilder
     }
 
 
-
     /**
      * Set many options
      *
-     * @param array     $options
+     * @param array $options
      * @return $this
+     * @throws Exception
      */
     public function sets(array $options)
     {
@@ -128,8 +128,14 @@ class Model_PharBuilder
         // Add files
         $phar->buildFromDirectory($this->source_dir);
 
+
+        /*
         $default_stub = $phar->createDefaultStub('index.php');
         $default_stub = '<?php define("APPID", "' . APPID . '")?>' . $default_stub;
+        */
+
+
+        $default_stub = $this->getPharHeader();
 
         // Compress
         if ($this->options['compress'])
@@ -154,6 +160,31 @@ class Model_PharBuilder
 
         return true;
 
+    }
+
+
+    protected function getPharHeader()
+    {
+
+        // Read default header file
+        $header = file_get_contents(RESOURCESPATH . 'pharheader.php.stub');
+
+        // Replace AppID symbol
+        $header = str_replace('#{{APPID}}', APPID, $header);
+
+        // Replace required extensions symbols
+        $req = empty($GLOBALS['igloo']->dependencies->extensions) ? [] : $GLOBALS['igloo']->dependencies->extensions;
+        $header = str_replace('#{{REQ_EXTENSIONS}}', var_export($req, true), $header);
+
+        // Replace required functions symbols
+        $req = empty($GLOBALS['igloo']->dependencies->functions) ? [] : $GLOBALS['igloo']->dependencies->functions;
+        $header = str_replace('#{{REQ_FUNCTIONS}}', var_export($req, true), $header);
+
+        // Replace minimum reserved memory symbols
+        $req = empty($GLOBALS['igloo']->dependencies->memory) ? 0 : Mem::convert($GLOBALS['igloo']->dependencies->memory);
+        $header = str_replace('#{{REQ_MEMORY_B}}', $req, $header);
+
+        return $header;
     }
 
 }

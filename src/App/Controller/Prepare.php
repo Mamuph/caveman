@@ -33,23 +33,23 @@ class Controller_Prepare extends Controller_Main
      *
      * @return int|void
      */
-    public function action_main()
+    public function actionMain()
     {
 
         if (!Params::get('source'))
         {
-            $this->action_help('prepare');
+            $this->actionHelp('prepare');
             return Apprunner::EXIT_SUCCESS;
         }
 
-        return parent::action_main();
+        parent::actionMain();
     }
 
 
     /**
      * Perform the prepare command
      */
-    public function action_prepare()
+    public function actionPrepare()
     {
 
         // Read source directory
@@ -61,7 +61,7 @@ class Controller_Prepare extends Controller_Main
 
 
         if (!is_dir($src))
-            $this->exit_error('Wrong path, missing project directory');
+            $this->exitError('Wrong path, missing project directory');
 
 
         // Read destination directory
@@ -82,19 +82,19 @@ class Controller_Prepare extends Controller_Main
                 $input = $this->term->confirm('<yellow>Continue?</yellow>');
 
                 if (!$input->confirmed())
-                    $this->exit_error('Aborting...');
+                    $this->exitError('Aborting...');
             }
 
         }
         else
         {
             if (!@mkdir($dest, 0774))
-                $this->exit_error("Unable to create directory $dest");
+                $this->exitError("Unable to create directory $dest");
         }
 
 
         if (!is_writable($dest))
-            $this->exit_error("Unable to write in $dest");
+            $this->exitError("Unable to write in $dest");
 
         $this->term->br()->out('<blue>Preparing release into: </blue>' . $dest);
 
@@ -104,7 +104,7 @@ class Controller_Prepare extends Controller_Main
         $this->term->br()->out("<blue>Copying release files...</blue>");
 
         if (!File::xcopy($src . DS . '*', $dest, 0755))
-            $this->exit_error("Unable to copy release files from $src to temporal directory: $dest");
+            $this->exitError("Unable to copy release files from $src to temporal directory: $dest");
 
 
         // Exclude files
@@ -145,7 +145,7 @@ class Controller_Prepare extends Controller_Main
         }
 
 
-        $this->term->br()->out('<green>Release is ready at:</green> ' . $dest);
+        $this->term->br()->out("<green>Release is ready at:</green> $dest");
 
 
         return Apprunner::EXIT_SUCCESS;
