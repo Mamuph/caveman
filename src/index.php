@@ -79,7 +79,7 @@ $config = 'Config';
  * Define an absolute App ID
  */
 if (!defined('APPID'))
-    define('APPID', uniqid('mamuph_', true));
+    define('APPID', uniqid('mamuph_'));
 
 
 /**

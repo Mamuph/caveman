@@ -38,7 +38,6 @@ class Model_PharBuilder
      */
     public function __construct($source_dir)
     {
-
         $this->source_dir = $source_dir;
 
         if (!Phar::canWrite())
@@ -109,6 +108,11 @@ class Model_PharBuilder
 
         $filesystem_mask = FilesystemIterator::UNIX_PATHS | FilesystemIterator::SKIP_DOTS;
 
+        // The header is taken before the instantiate the Phar object.
+        // It is due because as soon that Phar is instantiated the context scope changes and it will not allow
+        // to load internal files.
+        $default_stub = $this->getPharHeader();
+
         try
         {
             $phar = new Phar($file, $filesystem_mask, APPID . '.phar');
@@ -126,14 +130,19 @@ class Model_PharBuilder
             $phar->setSignatureAlgorithm($this->options['signature'], $this->options['private_key'] ? $this->options['private_key'] : null);
 
         // Add files
-        $phar->buildFromDirectory($this->source_dir);
+        try
+        {
+            $phar->buildFromDirectory($this->source_dir);
+        }
+        catch (PharException $e)
+        {
+            return $e->getMessage();
+        }
 
         /*
         $default_stub = $phar->createDefaultStub('index.php');
         $default_stub = '<?php define("APPID", "' . APPID . '")?>' . $default_stub;
         */
-
-        $default_stub = $this->getPharHeader();
 
         // Compress
         if ($this->options['compress'])
@@ -161,6 +170,11 @@ class Model_PharBuilder
     }
 
 
+    /**
+     * Copy and process PHAR stub.
+     *
+     * @return string
+     */
     protected function getPharHeader()
     {
 

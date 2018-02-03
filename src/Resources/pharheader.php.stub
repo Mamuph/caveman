@@ -73,14 +73,10 @@ foreach (#{{REQ_FUNCTIONS}} as $function)
 
 unset($function);
 
-if (in_array('phar', stream_get_wrappers()) && class_exists('Phar', 0)) {
-    Phar::interceptFileFuncs();
-    Phar::mapPhar('#{{APPID}}.phar');
-    set_include_path('phar://' . __FILE__ . PATH_SEPARATOR . get_include_path());
-    include 'phar://' . __FILE__ . '/' . Extract_Phar::START;
-    return;
-}
-
+Phar::mapPhar(APPID . '.phar');
+set_include_path('phar://' . __FILE__ . PATH_SEPARATOR . get_include_path());
+include 'phar://' . __FILE__ . '/' . Extract_Phar::START;
+Phar::interceptFileFuncs();
 
 class Extract_Phar
 {

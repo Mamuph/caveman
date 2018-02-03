@@ -132,7 +132,22 @@ class Controller_Build extends Controller_Main
             if ($file_type == 'text' || $file_format == 'php')
             {
 
-                if ($file_format == 'php' || $file_format == 'x-php')
+                // Some files should be not striped according to the policy
+                $ignore_stripe = false;
+
+                if (!empty($GLOBALS['igloo']->policies->ignore_stripe))
+                {
+                    foreach ($GLOBALS['igloo']->policies->ignore_stripe as $ignore_stripe_file)
+                    {
+                        if (File::matchFilenamePattern($file, '*/' . $ignore_stripe_file))
+                        {
+                            $ignore_stripe = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (($file_format == 'php' || $file_format == 'x-php') && !$ignore_stripe)
                     $file_content = php_strip_whitespace($file);
                 else
                     $file_content = file_get_contents($file);
@@ -143,7 +158,6 @@ class Controller_Build extends Controller_Main
             }
 
         }
-
 
 
         // Modify versions
@@ -157,7 +171,6 @@ class Controller_Build extends Controller_Main
         $this->actionIncBuild();
 
 
-
         // Build phar
         // ----------
         $this->term->br()->out("<blue>Building PHAR...</blue>");
@@ -166,16 +179,33 @@ class Controller_Build extends Controller_Main
 
         // Prepare signature
         // -----------------
-        if (!empty(Params::get('private-key')))
-        {
-            $signature = new Model_SignatureManager(Params::get('private-key'));
-            $key_password = '';
+        $generate_key = Params::get('generate-key');
 
-            if ($signature->isProtected())
+        if (!empty(Params::get('private-key')) || !empty($generate_key))
+        {
+            $signature = new Model_SignatureManager();
+
+            $key_password = Params::get('key-passphrase');
+
+            // Generate automatically a key pair or just and external private key.
+            if (!empty($generate_key))
+            {
+                $this->term->br()->out('🔐  <blue>Generating key pair...</blue>');
+                $signature->generateKeys($buildpath, $GLOBALS['igloo']->build->name, $key_password);
+            }
+            else
+            {
+                $signature->setPrivateKeyFromFile(Params::get('private-key'));
+            }
+
+
+            if (($signature->isProtected() && empty($key_password)) || $key_password === true)
             {
                 $input_password = $this->term->br()->password('🔐  <yellow>Enter the private key password:</yellow>');
                 $key_password = $input_password->prompt();
             }
+
+            echo $key_password;
 
             $this->term->br()->out('<blue>Exporting signature...</blue>');
 
@@ -187,6 +217,7 @@ class Controller_Build extends Controller_Main
 
 
         // Set signature type
+        // ------------------
         $signature_type = Params::get('signature-type');
 
         if (is_string($signature_type))
@@ -223,6 +254,8 @@ class Controller_Build extends Controller_Main
 
         $phar->set('compress', $compression_method);
 
+        // Finishing the PHAR building process
+        // -----------------------------------
         if (($build_status = $phar->build($pharfile)) !== true)
             $this->exitError($build_status);
 

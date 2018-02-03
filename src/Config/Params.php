@@ -51,12 +51,25 @@ return
             'openssl'
         ]
     ],
-    'private-key'    =>
+    'private-key'   =>
     [
         'long_arg'      => 'private-key',
         'description'   => 'Private key path used for sign the phar file (PEM format)',
         'optional'      => true,
         'accept_value'  => 'path'
+    ],
+    'generate-key'  =>
+    [
+        'long_arg'      => 'generate-key',
+        'description'   => 'Generate keys and sign phar file (PEM format)',
+        'optional'      => true
+    ],
+    'key-passphrase'=>
+    [
+        'long_arg'      => 'key-passphrase',
+        'description'   => 'Private key passphrase',
+        'optional'      => true,
+        'value'         => ''
     ],
     'executable'    =>
     [

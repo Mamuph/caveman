@@ -4,7 +4,7 @@
 /**
  * Array helper extension.
  *
- * @package    Caverman
+ * @package    Caveman
  * @category   Helpers
  * @author     Mamuph
  * @copyright  (c) 2007-2016 Mamuph Team
