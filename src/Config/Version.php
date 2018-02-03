@@ -1,7 +1,7 @@
 <?php
  return array (
   'major' => 2,
-  'minor' => 1,
-  'build' => 37,
-  'codename' => 'Caverman',
+  'minor' => 4,
+  'build' => 122,
+  'codename' => 'Caveman',
 );

@@ -16,9 +16,17 @@
       "mbstring",
       "ctype"   ,
       "pcntl",
-      "pcre"
+      "pcre",
+      "phar",
+      "openssl"
     ],
     "functions"   : [],
     "memory"      : "64MB"
+  },
+  "policies":
+  {
+    "ignore_stripe": [
+      "Resources/pharheader.php.stub"
+    ]
   }
 }
