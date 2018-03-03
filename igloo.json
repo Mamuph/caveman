@@ -8,7 +8,7 @@
   },
   "build"     :
   {
-    "name"      : "caveman_#{{VERSION.MAJOR}}.#{{VERSION.MINOR}}.phar"
+    "name"      : "caveman"
   },
   "dependencies":
   {
