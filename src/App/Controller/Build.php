@@ -205,7 +205,6 @@ class Controller_Build extends Controller_Main
                 $key_password = $input_password->prompt();
             }
 
-            echo $key_password;
 
             $this->term->br()->out('<blue>Exporting signature...</blue>');
 
