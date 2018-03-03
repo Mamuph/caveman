@@ -1,8 +1,8 @@
 {
   "name": "mamuph/caveman",
   "description": "The Mamuph Helper Tool",
-  "minimum-stability": "dev",
-  "license": "BSD",
+  "keywords": ["mamuph", "caveman", "phar"],
+  "license": "BSD-3-Clause",
   "authors": [
     {
       "name": "Juan Lago",
@@ -14,5 +14,8 @@
   },
   "require": {
     "league/climate": "^3.2"
-  }
+  },
+  "bin": [
+    "build/caveman"
+  ]
 }
