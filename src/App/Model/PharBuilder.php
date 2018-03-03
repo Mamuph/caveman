@@ -108,14 +108,17 @@ class Model_PharBuilder
 
         $filesystem_mask = FilesystemIterator::UNIX_PATHS | FilesystemIterator::SKIP_DOTS;
 
-        // The header is taken before the instantiate the Phar object.
+        // The header is taken before instantiate the Phar object.
         // It is due because as soon that Phar is instantiated the context scope changes and it will not allow
         // to load internal files.
         $default_stub = $this->getPharHeader();
 
+        // Add .phar extension to filename
+        $phar_filename = strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'phar' ? $file : $file . '.phar';
+
         try
         {
-            $phar = new Phar($file, $filesystem_mask, APPID . '.phar');
+            $phar = new Phar($phar_filename, $filesystem_mask, APPID . '.phar');
         }
         catch (UnexpectedValueException $e) {
             return $e->getMessage();
@@ -161,6 +164,10 @@ class Model_PharBuilder
 
         // Write changes on disk
         $phar->stopBuffering();
+
+        // Rename file
+        if ($phar_filename !== $file)
+            rename($phar_filename, $file);
 
         if ($this->options['executable'] === true)
             chmod($file, 0775);

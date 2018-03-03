@@ -10,7 +10,6 @@ composer.lock
 src/Vendor/
 
 ### Ignore builds
-build/*.phar
 build/temp_*
 
 ### JetBrains template

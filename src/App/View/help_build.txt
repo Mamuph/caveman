@@ -16,3 +16,5 @@
         --inc-major         Increase major version
         --inc-minor         Increase minor version
         --private-key=key   Sign with private key (PEM format)
+        --key-passphrase    Private key passphrase (Prompted)
+        --generate-key      Generate key pair and sign PHAR
